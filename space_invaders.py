@@ -28,7 +28,7 @@ def play_space_invaders():
     pygame.display.set_caption("Space Invaders")
 
     # Load images
-    spaceship_img = pygame.image.load("spaceship.png")
+    spaceship_img = pygame.image.load("space_ship.png")
     alien_img = pygame.image.load("alien.png")
     bullet_img = pygame.image.load("bullet.png")
 
