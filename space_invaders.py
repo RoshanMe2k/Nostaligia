@@ -116,5 +116,3 @@ def play_space_invaders():
 
         # Set the frame rate
         pygame.time.Clock().tick(60)
-if __name__ == "__main__":
-    play_space_invaders()
