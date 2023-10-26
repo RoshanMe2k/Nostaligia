@@ -43,12 +43,14 @@
 5. Change to executable
 
     ```bash
-    chmod +x mainmenu
+    chmod +x mainmenu.py (edited from mainmenu to mainmenu.py because of certain errors)
     ```
 ## Usage
 
 Provide instructions on how to run and use your game.
 
 ```bash
-./mainmenu
+python3 mainmenu.py
+(or)
+./mainmenu.py
 ```
