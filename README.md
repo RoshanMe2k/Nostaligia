@@ -18,7 +18,7 @@
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/roshanme/Nostaliga.git
+    git clone git@github.com:RoshanMe2k/Nostaliga
     ```
 
 2. Navigate to the project directory:
