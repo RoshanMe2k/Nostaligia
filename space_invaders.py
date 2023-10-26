@@ -30,6 +30,7 @@ def play_space_invaders():
     alien_img = pygame.image.load("alien.png")
     bullet_img = pygame.image.load("bullet.png")
 
+
     # Game variables
     player_x = WIDTH // 2 - SPACESHIP_WIDTH // 2
     player_y = HEIGHT - SPACESHIP_HEIGHT - 10
