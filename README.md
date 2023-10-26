@@ -1,4 +1,4 @@
-# Nostaliga -that days
+# Nostaligia -that days
 
 ## Table of Contents
 
