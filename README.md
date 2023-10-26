@@ -3,12 +3,8 @@
 ## Table of Contents
 
 - [Overview](#overview)
-- [Features](#features)
-- [Installation](#installation)
+- [Prerequesties](#Prerequisites)
 - [Usage](#usage)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Installation
 
