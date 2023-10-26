@@ -3,84 +3,92 @@ import pygame.mixer
 import pygame
 import sys
 import random
+import pygame
+import random
 
 # Constants
-WIDTH, HEIGHT = 400, 600
-GRID_SIZE = 20
-GRID_WIDTH, GRID_HEIGHT = WIDTH // GRID_SIZE, HEIGHT // GRID_SIZE
-WHITE, BLACK, CYAN, RED = (255, 255, 255), (0, 0, 0), (0, 255, 255), (255, 0, 0)
+WIDTH, HEIGHT = 300, 600
+GRID_SIZE = 30
+BOARD_WIDTH, BOARD_HEIGHT = WIDTH // GRID_SIZE, HEIGHT // GRID_SIZE
+WHITE, BLACK, RED = (255, 255, 255), (0, 0, 0), (255, 0, 0)
 
-# Tetris class
-class Tetris:
-    def __init__(self):
-        self.board = [[0] * GRID_WIDTH for _ in range(GRID_HEIGHT)]
-        self.current_piece = self.spawn_piece()
-        self.current_row, self.current_col = 0, GRID_WIDTH // 2
-        self.game_over = False
+# Tetris pieces
+PIECES = [
+    [[1, 1, 1, 1]],
+    [[1, 1], [1, 1]],
+    [[1, 1, 1], [0, 1, 0]],
+    [[1, 1, 1], [1, 0, 0]],
+    [[1, 1, 1], [0, 0, 1]],
+]
 
-    def spawn_piece(self):
-        pieces = [
-            [[1, 1, 1, 1]],  # I
-            [[1, 1, 1], [1, 0, 0]],  # L
-            [[1, 1, 1], [0, 0, 1]],  # J
-            [[1, 1, 1], [0, 1, 0]],  # T
-            [[1, 1], [1, 1]],  # O
-            [[1, 1, 0], [0, 1, 1]],  # S
-            [[0, 1, 1], [1, 1, 0]]   # Z
-        ]
-        return random.choice(pieces)
+# Initialize game window
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Tetris")
 
-    def rotate_piece(self):
-        rotated_piece = [[self.current_piece[j][i] for j in range(len(self.current_piece))] for i in range(len(self.current_piece[0])-1, -1, -1)]
-        if self.is_valid_move(rotated_piece, self.current_row, self.current_col):
-            self.current_piece = rotated_piece
+# Scoring
+score = 0
 
-    def move_piece(self, row_offset, col_offset):
-        if self.is_valid_move(self.current_piece, self.current_row + row_offset, self.current_col + col_offset):
-            self.current_row += row_offset
-            self.current_col += col_offset
+def create_board():
+    return [[0] * BOARD_WIDTH for _ in range(BOARD_HEIGHT)]
 
-    def is_valid_move(self, piece, row, col):
-        for i in range(len(piece)):
-            for j in range(len(piece[0])):
-                if piece[i][j]:
-                    if (row + i >= GRID_HEIGHT or col + j < 0 or col + j >= GRID_WIDTH or
-                            (row + i < GRID_HEIGHT and self.board[row + i][col + j])):
-                        return False
-        return True
- 
+def draw_board(board):
+    for row in range(BOARD_HEIGHT):
+        for col in range(BOARD_WIDTH):
+            if board[row][col]:
+                pygame.draw.rect(screen, WHITE, (col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE))
+                pygame.draw.rect(screen, BLACK, (col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE), 2)
 
-    def place_piece_on_board(self):
-        for i in range(len(self.current_piece)):
-            for j in range(len(self.current_piece[0])):
-                if self.current_piece[i][j]:
-                    self.board[self.current_row + i][self.current_col + j] = 1
+def draw_piece(piece, row, col):
+    for i in range(len(piece)):
+        for j in range(len(piece[0])):
+            if piece[i][j]:
+                pygame.draw.rect(screen, RED, ((col + j) * GRID_SIZE, (row + i) * GRID_SIZE, GRID_SIZE, GRID_SIZE))
+                pygame.draw.rect(screen, BLACK, ((col + j) * GRID_SIZE, (row + i) * GRID_SIZE, GRID_SIZE, GRID_SIZE), 2)
 
-    def clear_rows(self):
-        full_rows = [row for row in range(GRID_HEIGHT) if all(self.board[row])]
-        for row in full_rows:
-            del self.board[row]
-            self.board.insert(0, [0] * GRID_WIDTH)
+def is_valid_move(board, piece, row, col):
+    for i in range(len(piece)):
+        for j in range(len(piece[0])):
+            if (
+                piece[i][j]
+                and (
+                    row + i >= BOARD_HEIGHT
+                    or col + j < 0
+                    or col + j >= BOARD_WIDTH
+                    or row + i < 0
+                    or board[row + i][col + j]
+                )
+            ):
+                return False
+    return True
 
-    def check_collision(self):
-        for i in range(len(self.current_piece)):
-            for j in range(len(self.current_piece[0])):
-                if self.current_piece[i][j] and (self.board[self.current_row + i][self.current_col + j] or self.current_row + i >= GRID_HEIGHT):
-                    return True
-        return False
+def rotate_piece(piece):
+    return [list(row[::-1]) for row in zip(*piece)]
 
-    def draw(self, screen):
-        screen.fill(BLACK)
-        for i in range(GRID_HEIGHT):
-            for j in range(GRID_WIDTH):
-                if self.board[i][j]:
-                    pygame.draw.rect(screen, CYAN, (j * GRID_SIZE, i * GRID_SIZE, GRID_SIZE, GRID_SIZE))
-        for i in range(len(self.current_piece)):
-            for j in range(len(self.current_piece[0])):
-                if self.current_piece[i][j]:
-                    pygame.draw.rect(screen, CYAN, ((self.current_col + j) * GRID_SIZE, (self.current_row + i) * GRID_SIZE, GRID_SIZE, GRID_SIZE))
+def merge_piece(board, piece, row, col):
+    for i in range(len(piece)):
+        for j in range(len(piece[0])):
+            if piece[i][j]:
+                board[row + i][col + j] = 1
+
+def clear_rows(board):
+    global score
+    full_rows = [i for i, row in enumerate(board) if all(row)]
+    for row in full_rows:
+        del board[row]
+        board.insert(0, [0] * BOARD_WIDTH)
+        score += 100  # Award points for each cleared row
+
+def display_score():
+    font = pygame.font.Font(None, 36)
+    score_text = font.render(f"Score: {score}", True, WHITE)
+    screen.blit(score_text, (10, 10))
 
 def play_tetris():
+    global score
+    clock = pygame.time.Clock()
+    board = create_board()
+    current_piece = random.choice(PIECES)
+    current_row, current_col = 0, BOARD_WIDTH // 2
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Tetris Game")
@@ -96,38 +104,41 @@ def play_tetris():
     # Start playing the music in a loop
     pygame.mixer.music.play(-1)
 
-
-    tetris = Tetris()
-
-    while not tetris.game_over:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                pygame.mixer.music.stop()  # Stop the music when quitting the game
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    tetris.move_piece(0, -1)
-                elif event.key == pygame.K_RIGHT:
-                    tetris.move_piece(0, 1)
-                elif event.key == pygame.K_DOWN:
-                    tetris.move_piece(1, 0)
-                elif event.key == pygame.K_UP:
-                    tetris.rotate_piece()
+                pygame.mixer.music.stop()
+                quit()
 
-        if tetris.is_valid_move(tetris.current_piece, tetris.current_row + 1, tetris.current_col):
-            tetris.move_piece(1, 0)
-        else:
-            tetris.place_piece_on_board()
-            tetris.clear_rows()
-            tetris.current_piece = tetris.spawn_piece()
-            tetris.current_row, tetris.current_col = 0, GRID_WIDTH // 2
-            if tetris.check_collision():
-                tetris.game_over = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT and is_valid_move(board, current_piece, current_row, current_col - 1):
+                    current_col -= 1
+                elif event.key == pygame.K_RIGHT and is_valid_move(board, current_piece, current_row, current_col + 1):
+                    current_col += 1
+                elif event.key == pygame.K_DOWN and is_valid_move(board, current_piece, current_row + 1, current_col):
+                    current_row += 1
+                elif event.key == pygame.K_SPACE:
+                    rotated_piece = rotate_piece(current_piece)
+                    if is_valid_move(board, rotated_piece, current_row, current_col):
+                        current_piece = rotated_piece
 
-        tetris.draw(screen)
+        if not is_valid_move(board, current_piece, current_row + 1, current_col):
+            merge_piece(board, current_piece, current_row, current_col)
+            clear_rows(board)
+            current_row, current_col = 0, BOARD_WIDTH // 2
+            current_piece = random.choice(PIECES)
+
+        elif is_valid_move(board, current_piece, current_row + 1, current_col):
+            current_row += 1
+
+        screen.fill(BLACK)
+        draw_board(board)
+        draw_piece(current_piece, current_row, current_col)
+        display_score()
+
         pygame.display.flip()
-        clock.tick(5)  # Adjust the speed of the game
+        clock.tick(5)
 
 if __name__ == "__main__":
     play_tetris()
