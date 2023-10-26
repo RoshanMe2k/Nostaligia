@@ -3,6 +3,8 @@ import sys
 import pygame.mixer
 import random
 
+pygame.init()
+pygame.mixer.init()
 def play_space_invaders():
     # Constants
     WIDTH, HEIGHT = 800, 600
@@ -10,10 +12,6 @@ def play_space_invaders():
     SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 50, 50
     ALIEN_WIDTH, ALIEN_HEIGHT = 50, 50
     BULLET_WIDTH, BULLET_HEIGHT = 5, 15
-
-    # Initialize Pygame
-    pygame.init()
-    pygame.mixer.init()
 
     # Load the music file
     pygame.mixer.music.load("space_invaders.mp3")  # Replace with the actual path to your Snake music file
