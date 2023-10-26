@@ -28,9 +28,9 @@ def play_space_invaders():
     pygame.display.set_caption("Space Invaders")
 
     # Load images
-    spaceship_img = pygame.image.load(" spaceship.png")
-    alien_img = pygame.image.load(" alien.png")
-    bullet_img = pygame.image.load(" bullet.png")
+    spaceship_img = pygame.image.load("spaceship.png")
+    alien_img = pygame.image.load("alien.png")
+    bullet_img = pygame.image.load("bullet.png")
 
     # Game variables
     player_x = WIDTH // 2 - SPACESHIP_WIDTH // 2
