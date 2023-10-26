@@ -5,6 +5,10 @@ import random
 
 pygame.init()
 pygame.mixer.init()
+
+spaceship_img = pygame.image.load("spaceship.png")
+alien_img = pygame.image.load("alien.png")
+bullet_img = pygame.image.load("bullet.png")
 def play_space_invaders():
     # Constants
     WIDTH, HEIGHT = 800, 600
@@ -24,12 +28,6 @@ def play_space_invaders():
     # Set up the game window
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Space Invaders")
-
-    # Load images
-    spaceship_img = pygame.image.load("spaceship.png")
-    alien_img = pygame.image.load("alien.png")
-    bullet_img = pygame.image.load("bullet.png")
-
 
     # Game variables
     player_x = WIDTH // 2 - SPACESHIP_WIDTH // 2
