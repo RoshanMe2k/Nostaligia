@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-- [Overview](#overview)
+- [Installation](#Installation)
 - [Prerequesties](#Prerequisites)
 - [Usage](#usage)
 
